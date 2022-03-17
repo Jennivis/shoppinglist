@@ -5,8 +5,9 @@ import './App.css';
 const URL = 'http://localhost/shoppinglist/';
 
 function App() {
-  const [item, setItem] = useState('');
+  const [item, setItem] = useState("");
   const [items, setItems] = useState([]);
+  const [amount, setAmount] = useState("")
 
   useEffect(() => {
     axios.get(URL)
@@ -19,7 +20,7 @@ function App() {
 
   function save(e) {
     e.preventDefault();
-    const json = JSON.stringify({description:item});
+    const json = JSON.stringify({description:item, amount:amount});
     axios.post(URL + 'add.php',json, {
       headers: {
         'Content-Type' : 'application/json'
@@ -28,6 +29,7 @@ function App() {
     .then ((response) => {
       setItems(items => [...items,response.data]);
       setItem('');
+      setAmount('')
     }).catch(error => {
       alert(error.response ? error.response.data.error : error);
     })
@@ -50,16 +52,18 @@ function App() {
   
   return (
     <div className='container'>
+      <h1>Shopping list</h1>
       <form onSubmit={save}>
-        <label>New item</label>
-        <input value={item} placeholder='Add a new item' onChange={e => setItem(e.target.value)}/>
+        <label>New item:</label>
+        <input type="text" value={item} placeholder='Add a new item' onChange={e => setItem(e.target.value)}/>
+        <input type="number" value={amount} placeholder='Amount' onChange={e => setAmount(e.target.value)}/>
         <button>Save</button>
       </form>
       <ol>
         {items?.map(item => (
           <li key={item.id}>
-            {item.description}
-            <a className='delete' onClick={() => remove(item.id)} href="#"> Delete</a>
+            {item.description} {item.amount} &nbsp;
+            <a className='delete' onClick={() => remove(item.id)} href="#">Delete</a>
           </li>
         ))}
       </ol>
